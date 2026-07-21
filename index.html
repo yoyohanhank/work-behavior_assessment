@@ -3,421 +3,314 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Work Behavioral Assessment (WBA) - Forced-Choice Standard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Laporan Hasil Test - Work Behavioral Assessment</title>
+  
+  <!-- CDN html2pdf.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
       --primary: #1e40af;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
+      --primary-light: #eff6ff;
+      --text-dark: #1e293b;
       --text-muted: #64748b;
-      --border: #cbd5e1;
-      --accent: #eff6ff;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 1.5rem 1rem; min-height: 100vh; }
-    
-    .container {
-      width: 100%; max-width: 850px; background: var(--card-bg); border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); padding: 2rem; border: 1px solid var(--border); position: relative;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
-    .step { display: none; }
-    .step.active { display: block; }
-
-    h1 { font-size: 1.6rem; color: var(--primary); margin-bottom: 0.5rem; }
-    h2 { font-size: 1.2rem; margin-bottom: 0.75rem; }
-    p { color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem; }
-
-    .form-group { margin-bottom: 1.25rem; }
-    label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; }
-    input[type="text"], input[type="date"] {
-      width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; outline: none;
+    body {
+      background-color: #f8fafc;
+      color: var(--text-dark);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    input:focus { border-color: var(--primary); }
 
-    .btn {
-      background-color: var(--primary); color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 6px;
-      font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s;
+    .action-bar {
+      margin-bottom: 20px;
     }
-    .btn:hover { background-color: var(--primary-hover); }
-    .btn-secondary { background-color: #64748b; margin-right: 0.5rem; }
-    .btn-secondary:hover { background-color: #475569; }
 
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
-    .timer-badge { background: #fee2e2; color: #991b1b; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; }
-
-    .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 1.5rem; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s; }
-
-    /* Forced Choice Pair Style */
-    .pair-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
-    .pair-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; }
-    .forced-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    @media (max-width: 600px) { .forced-choice-grid { grid-template-columns: 1fr; } }
-
-    .choice-card {
-      background: #ffffff; border: 2px solid var(--border); border-radius: 8px; padding: 1rem;
-      cursor: pointer; transition: all 0.2s ease; display: flex; align-items: flex-start; gap: 0.75rem;
+    .btn-download {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
-    .choice-card:hover { border-color: var(--primary); background: var(--accent); }
-    .choice-card input[type="radio"] { margin-top: 0.25rem; }
-    .choice-text { font-size: 0.92rem; color: var(--text); line-height: 1.4; }
 
-    .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+    .btn-download:hover {
+      background-color: #1d4ed8;
+    }
 
-    /* Report & Watermark */
-    .report-box { border: 1px solid var(--border); padding: 2rem; border-radius: 8px; background: #ffffff; position: relative; overflow: hidden; }
+    /* Container Laporan PDF */
+    .report-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 850px;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Watermark Diagonal Overlay */
     .watermark-overlay {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
-      font-size: 1.4rem; font-weight: 800; color: rgba(30, 64, 175, 0.08); pointer-events: none;
-      white-space: nowrap; text-align: center; width: 100%; user-select: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-30deg);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(30, 64, 175, 0.08);
+      white-space: nowrap;
+      user-select: none;
     }
-    .watermark-code { font-family: monospace; font-size: 0.85rem; color: #64748b; background: #f1f5f9; padding: 0.3rem 0.6rem; border-radius: 4px; }
-    .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.25rem 0; }
-    .score-box { background: #f8fafc; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; text-align: center; }
-    .score-num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
-    .answers-list { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; background: #fafafa; }
-    .answer-row { font-size: 0.85rem; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0; }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .report-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .badge-code {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      font-family: monospace;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+
+    .divider {
+      height: 3px;
+      background-color: var(--primary);
+      margin-bottom: 24px;
+      border-radius: 2px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+      margin-bottom: 32px;
+    }
+
+    .meta-item {
+      font-size: 0.95rem;
+    }
+
+    .meta-item strong {
+      color: var(--text-dark);
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+
+    .scores-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .score-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      background: #ffffff;
+    }
+
+    .score-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .score-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Container Jawaban (Hapus max-height dan overflow agar PDF utuh) */
+    .answers-list {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      background: #fafafa;
+    }
+
+    .answer-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      page-break-inside: avoid; /* Menjaga agar soal tidak terpotong pertengahan garis di PDF */
+    }
+
+    .answer-item:last-child {
+      border-bottom: none;
+    }
+
+    .answer-number {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .answer-text {
+      color: var(--primary);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-
-  <!-- STEP 1: IDENTITAS -->
-  <div id="step-1" class="step active">
-    <h1>Work Behavioral Assessment (WBA)</h1>
-    <p>Standard Forced-Choice Module (90 Pasang Pernyataan)</p>
-    <form id="identity-form" onsubmit="startInstructions(event)">
-      <div class="form-group">
-        <label for="fullName">Nama Lengkap</label>
-        <input type="text" id="fullName" required placeholder="Masukkan nama lengkap">
-      </div>
-      <div class="form-group">
-        <label for="position">Jabatan / Posisi</label>
-        <input type="text" id="position" required placeholder="Contoh: Manager / Professional Staff">
-      </div>
-      <div class="form-group">
-        <label for="date">Tanggal Pelaksanaan</label>
-        <input type="date" id="date" required>
-      </div>
-      <button type="submit" class="btn">Lanjut ke Petunjuk &rarr;</button>
-    </form>
+  <!-- Tombol Aksi -->
+  <div class="action-bar">
+    <button class="btn-download" onclick="downloadPDF()">Download Hasil (PDF)</button>
   </div>
 
-  <!-- STEP 2: PETUNJUK -->
-  <div id="step-2" class="step">
-    <h1>Petunjuk Pengerjaan Assessment</h1>
-    <p>Harap membaca petunjuk di bawah ini sebelum memulai tes:</p>
-    <ul style="margin-left: 1.25rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem;">
-      <li><strong>Format Soal:</strong> Terdiri dari <strong>90 pasang pernyataan (Forced-Choice)</strong>.</li>
-      <li><strong>Instruksi:</strong> Pilih salah satu pernyataan dari tiap pasangan yang <strong>paling mencerminkan diri Anda</strong> dalam lingkungan kerja.</li>
-      <li><strong>Karakteristik:</strong> Tidak ada jawaban benar atau salah. Dimohon menjawab secara jujur dan spontan.</li>
-      <li><strong>Durasi Waktu:</strong> Diberikan waktu total <strong>30 menit</strong>.</li>
-      <li><strong>Hasil:</strong> Pada akhir tes, jawaban Anda dapat diunduh langsung dalam format PDF dengan Kode Watermark unik verifikasi.</li>
-    </ul>
-    <button class="btn btn-secondary" onclick="goToStep(1)">&larr; Kembali</button>
-    <button class="btn" onclick="startTest()">Mulai Tes Sekarang &rarr;</button>
-  </div>
-
-  <!-- STEP 3: ASSESSMENT (FORCED CHOICE) -->
-  <div id="step-3" class="step">
-    <div class="header-bar">
-      <div><span style="font-weight:700; color:var(--primary);" id="page-indicator">Halaman 1 / 9</span></div>
-      <div class="timer-badge" id="timer-display">Sisa Waktu: 30:00</div>
-    </div>
-
-    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-
-    <div id="questions-wrapper"></div>
-
-    <div class="pagination">
-      <button id="prev-page-btn" class="btn btn-secondary" onclick="prevPage()" style="display:none;">&larr; Halaman Sebelumnya</button>
-      <button id="next-page-btn" class="btn" onclick="nextPage()">Halaman Berikutnya &rarr;</button>
-    </div>
-  </div>
-
-  <!-- STEP 4: HASIL & DOWNLOAD -->
-  <div id="step-4" class="step">
-    <h1>Hasil Assessment Berhasil Dibuat</h1>
-    <p>Sesi penilaian telah selesai. Berikut adalah ringkasan dan unduhan laporan Anda.</p>
-
-    <div id="report-content" class="report-box">
-      <div class="watermark-overlay" id="watermark-bg">WBA0000001000dasfund</div>
-
-      <div style="border-bottom: 2px solid var(--primary); padding-bottom: 0.75rem; margin-bottom: 1rem;">
-        <h2 style="margin:0; color:var(--primary);">Laporan Jawaban Work Behavioral Assessment</h2>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
-          <span style="font-size:0.85rem; color:var(--text-muted);">Standard Forced-Choice Module (90 Items)</span>
-          <span class="watermark-code" id="watermark-tag">Kode: WBAhhmmss1000dasfund</span>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.9rem; margin-bottom:1rem;">
-        <div><strong>Nama Peserta:</strong> <span id="res-name">-</span></div>
-        <div><strong>Posisi:</strong> <span id="res-pos">-</span></div>
-        <div><strong>Tanggal Tes:</strong> <span id="res-date">-</span></div>
-        <div><strong>Waktu Selesai:</strong> <span id="res-time">-</span></div>
-      </div>
-
-      <h3>Ringkasan Profil Perilaku Kerja</h3>
-      <div class="score-grid">
-        <div class="score-box">
-          <div style="font-size:0.8rem; color:var(--text-muted);">Keandalan (Reliability)</div>
-          <div class="score-num" id="score-rel">0%</div>
-        </div>
-        <div class="score-box">
-          <div style="font-size:0.8rem; color:var(--text-muted);">Etika & Integritas</div>
-          <div class="score-num" id="score-eth">0%</div>
-        </div>
-        <div class="score-box">
-          <div style="font-size:0.8rem; color:var(--text-muted);">Manajemen Dilema</div>
-          <div class="score-num" id="score-dil">0%</div>
-        </div>
-      </div>
-
-      <h3 style="margin-top:1.25rem; margin-bottom:0.5rem;">Daftar Isian Jawaban Dipilih (90 Soal)</h3>
-      <div class="answers-list" id="answers-list-container"></div>
-    </div>
-
-    <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
-      <button class="btn btn-secondary" onclick="resetAll()">Tes Ulang</button>
-      <button class="btn" onclick="downloadPDF()">Download Hasil (PDF + Watermark)</button>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  // Database Pasangan Pernyataan Forced-Choice
-  const basePairs = [
-    ["Saya selalu menyelesaikan tugas tepat waktu.", "Saya mengutamakan kejujuran meskipun berisiko."],
-    ["Saya mematuhi seluruh prosedur standar operasional.", "Saya berani mengakui kesalahan tanpa mencari alasan."],
-    ["Saya mampu tetap tenang saat menghadapi tekanan kerja.", "Saya menjaga kerahasiaan dokumen penting perusahaan."],
-    ["Saya mengutamakan kepentingan tim di atas kepentingan pribadi.", "Saya menyampaikan fakta apa adanya kepada atasan."],
-    ["Saya konsisten dalam menjaga kualitas kerja harian.", "Saya menolak hadiah atau fasilitas yang melanggar aturan."],
-    ["Saya bertanggung jawab penuh atas hasil kerja saya.", "Saya berani menegur rekan yang melanggar kode etik."],
-    ["Saya teliti memeriksa kembali detail pekerjaan.", "Saya menjaga komitmen yang telah saya sepakati."],
-    ["Saya mampu mengambil keputusan objektif saat dilema.", "Saya tidak menggunakan fasilitas kantor untuk urusan pribadi."],
-    ["Saya fleksibel beradaptasi dengan perubahan prosedur.", "Saya selalu melaporkan perkembangan proyek secara transparan."],
-    ["Saya disiplin terhadap jam kerja dan aturan perusahaan.", "Saya menghargai perbedaan pendapat dalam diskusi."]
-  ];
-
-  // Mengisi 90 Butir Soal Pasangan
-  const full90Questions = [];
-  for (let i = 1; i <= 90; i++) {
-    const pair = basePairs[(i - 1) % basePairs.length];
-    full90Questions.push({
-      id: i,
-      optionA: { text: `[A] ${pair[0]}`, trait: (i % 3 === 1) ? 'rel' : (i % 3 === 2) ? 'eth' : 'dil' },
-      optionB: { text: `[B] ${pair[1]}`, trait: (i % 3 === 2) ? 'eth' : (i % 3 === 0) ? 'dil' : 'rel' }
-    });
-  }
-
-  // App Variables
-  let userData = {};
-  let currentGroup = 0; 
-  const itemsPerPage = 10;
-  let userChoices = {};
-  let timerInterval = null;
-  let secondsRemaining = 30 * 60; // 30 Menit
-  let submissionWatermarkCode = "";
-
-  document.getElementById('date').valueAsDate = new Date();
-
-  function goToStep(stepNum) {
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(`step-${stepNum}`).classList.add('active');
-  }
-
-  function startInstructions(e) {
-    e.preventDefault();
-    userData.name = document.getElementById('fullName').value;
-    userData.position = document.getElementById('position').value;
-    userData.date = document.getElementById('date').value;
-    goToStep(2);
-  }
-
-  function startTest() {
-    currentGroup = 0;
-    userChoices = {};
-    secondsRemaining = 30 * 60;
-    goToStep(3);
-    startTimer();
-    renderPage();
-  }
-
-  function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      secondsRemaining--;
-      let m = Math.floor(secondsRemaining / 60);
-      let s = secondsRemaining % 60;
-      document.getElementById('timer-display').innerText = `Sisa Waktu: ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-      
-      if (secondsRemaining <= 0) {
-        clearInterval(timerInterval);
-        alert("Waktu pengerjaan selesai! Jawaban akan dikumpulkan secara otomatis.");
-        submitAssessment();
-      }
-    }, 1000);
-  }
-
-  function renderPage() {
-    const wrapper = document.getElementById('questions-wrapper');
-    wrapper.innerHTML = "";
-
-    const startIndex = currentGroup * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, full90Questions.length);
-
-    document.getElementById('page-indicator').innerText = `Halaman ${currentGroup + 1} / ${Math.ceil(full90Questions.length / itemsPerPage)}`;
+  <!-- Area Laporan PDF -->
+  <div class="report-card" id="report-content">
     
-    const filledPercentage = ((Object.keys(userChoices).length) / 90) * 100;
-    document.getElementById('progress-fill').style.width = `${filledPercentage}%`;
+    <!-- Watermark Diagonal -->
+    <div class="watermark-overlay" id="watermark-text">
+      WBA1333121000dasfund • YOHAN KURNIAWAN
+    </div>
 
-    for (let i = startIndex; i < endIndex; i++) {
-      const item = full90Questions[i];
-      const selected = userChoices[item.id];
+    <!-- Header Laporan -->
+    <div class="report-header">
+      <h1 class="report-title">Laporan Jawaban Work Behavioral Assessment</h1>
+      <span class="badge-code" id="test-code">Kode: WBA1333121000dasfund</span>
+    </div>
 
-      const pairCard = document.createElement('div');
-      pairCard.className = 'pair-container';
-      pairCard.innerHTML = `
-        <div class="pair-title">Pasangan Pernyataan #${item.id}</div>
-        <div class="forced-choice-grid">
-          <label class="choice-card">
-            <input type="radio" name="pair_${item.id}" value="A" ${selected === 'A' ? 'checked' : ''} onchange="selectChoice(${item.id}, 'A')">
-            <span class="choice-text">${item.optionA.text}</span>
-          </label>
-          <label class="choice-card">
-            <input type="radio" name="pair_${item.id}" value="B" ${selected === 'B' ? 'checked' : ''} onchange="selectChoice(${item.id}, 'B')">
-            <span class="choice-text">${item.optionB.text}</span>
-          </label>
-        </div>
-      `;
-      wrapper.appendChild(pairCard);
-    }
+    <div class="divider"></div>
 
-    document.getElementById('prev-page-btn').style.display = currentGroup > 0 ? 'inline-block' : 'none';
-    if (currentGroup === Math.ceil(full90Questions.length / itemsPerPage) - 1) {
-      document.getElementById('next-page-btn').innerText = 'Submit Assessment';
-    } else {
-      document.getElementById('next-page-btn').innerText = 'Halaman Berikutnya \u2192';
-    }
+    <!-- Informasi Peserta -->
+    <div class="meta-grid">
+      <div class="meta-item"><strong>Nama Peserta:</strong> <span id="user-name">Yohan Kurniawan</span></div>
+      <div class="meta-item"><strong>Posisi:</strong> <span id="user-position">Manager</span></div>
+      <div class="meta-item"><strong>Tanggal Tes:</strong> <span id="test-date">2026-07-21</span></div>
+      <div class="meta-item"><strong>Waktu Selesai:</strong> <span id="test-time">13:33:12 WIB</span></div>
+    </div>
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    <!-- Ringkasan Profil -->
+    <h2 class="section-title">Ringkasan Profil Perilaku Kerja</h2>
+    <div class="scores-grid">
+      <div class="score-card">
+        <div class="score-label">Keandalan (Reliability)</div>
+        <div class="score-value" id="score-reliability">93%</div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Etika & Integritas</div>
+        <div class="score-value" id="score-ethics">93%</div>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Manajemen Dilema</div>
+        <div class="score-value" id="score-dilemma">93%</div>
+      </div>
+    </div>
 
-  function selectChoice(qId, val) {
-    userChoices[qId] = val;
-    const filledPercentage = ((Object.keys(userChoices).length) / 90) * 100;
-    document.getElementById('progress-fill').style.width = `${filledPercentage}%`;
-  }
+    <!-- Daftar Isian Jawaban (90 Soal) -->
+    <h2 class="section-title">Daftar Isian Jawaban Dipilih (90 Soal)</h2>
+    <div class="answers-list" id="answers-list-container">
+      <!-- Item soal di-generate otomatis via JS -->
+    </div>
 
-  function nextPage() {
-    const startIndex = currentGroup * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, full90Questions.length);
+  </div>
 
-    for (let i = startIndex; i < endIndex; i++) {
-      const qId = full90Questions[i].id;
-      if (!userChoices[qId]) {
-        alert(`Harap pilih salah satu pernyataan pada nomor #${qId} sebelum melanjutkan.`);
-        return;
-      }
-    }
-
-    if (currentGroup < Math.ceil(full90Questions.length / itemsPerPage) - 1) {
-      currentGroup++;
-      renderPage();
-    } else {
-      submitAssessment();
-    }
-  }
-
-  function prevPage() {
-    if (currentGroup > 0) { currentGroup--; renderPage(); }
-  }
-
-  function submitAssessment() {
-    clearInterval(timerInterval);
-
-    // Format Watermark: WBAhhmmss1000dasfund
-    const now = new Date();
-    const hh = now.getHours().toString().padStart(2, '0');
-    const mm = now.getMinutes().toString().padStart(2, '0');
-    const ss = now.getSeconds().toString().padStart(2, '0');
-    submissionWatermarkCode = `WBA${hh}${mm}${ss}1000dasfund`;
-
-    // Kalkulasi Skor
-    let scoreRel = 0, scoreEth = 0, scoreDil = 0;
-    full90Questions.forEach(q => {
-      const choice = userChoices[q.id];
-      const chosenTrait = (choice === 'A') ? q.optionA.trait : q.optionB.trait;
-      if (chosenTrait === 'rel') scoreRel++;
-      if (chosenTrait === 'eth') scoreEth++;
-      if (chosenTrait === 'dil') scoreDil++;
-    });
-
-    const totalAnswered = Object.keys(userChoices).length || 1;
-    const pctRel = Math.round((scoreRel / totalAnswered) * 100 * 2.8);
-    const pctEth = Math.round((scoreEth / totalAnswered) * 100 * 2.8);
-    const pctDil = Math.round((scoreDil / totalAnswered) * 100 * 2.8);
-
-    // Set Data ke Laporan
-    document.getElementById('res-name').innerText = userData.name;
-    document.getElementById('res-pos').innerText = userData.position;
-    document.getElementById('res-date').innerText = userData.date;
-    document.getElementById('res-time').innerText = `${hh}:${mm}:${ss} WIB`;
-
-    document.getElementById('watermark-tag').innerText = `Kode: ${submissionWatermarkCode}`;
-    document.getElementById('watermark-bg').innerText = `${submissionWatermarkCode} • ${userData.name.toUpperCase()}`;
-
-    document.getElementById('score-rel').innerText = `${Math.min(pctRel, 98)}%`;
-    document.getElementById('score-eth').innerText = `${Math.min(pctEth, 96)}%`;
-    document.getElementById('score-dil').innerText = `${Math.min(pctDil, 94)}%`;
-
-    // Render List Jawaban
-    const listContainer = document.getElementById('answers-list-container');
-    let listHtml = '';
-    full90Questions.forEach(q => {
-      const choice = userChoices[q.id] || '-';
-      const text = (choice === 'A') ? q.optionA.text : (choice === 'B') ? q.optionB.text : 'Tidak dijawab';
-      listHtml += `
-        <div class="answer-row">
-          <strong>No. ${q.id}:</strong> Pilihan [${choice}] &mdash; <span style="color:#1e40af;">${text}</span>
-        </div>
-      `;
-    });
-    listContainer.innerHTML = listHtml;
-
-    goToStep(4);
-  }
-
-  function downloadPDF() {
-    const element = document.getElementById('report-content');
-    const opt = {
-      margin:       0.4,
-      filename:     `WBA_Hasil_${userData.name.replace(/\s+/g, '_')}_${submissionWatermarkCode}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  <script>
+    // Data Dummy Contoh untuk 90 Soal
+    const userData = {
+      name: "Yohan Kurniawan",
+      position: "Manager",
+      date: "2026-07-21",
+      time: "13:33:12 WIB",
+      code: "WBA1333121000dasfund",
+      reliability: "93%",
+      ethics: "93%",
+      dilemma: "93%"
     };
 
-    html2pdf().set(opt).from(element).save();
-  }
+    // Contoh data 90 jawaban
+    const sampleStatements = [
+      "Saya selalu menyelesaikan tugas tepat waktu.",
+      "Saya mematuhi aturan dan standar operasional.",
+      "Saya mengutamakan kepentingan tim di atas pribadi.",
+      "Saya bertindak jujur meskipun dalam situasi sulit.",
+      "Saya mampu mengambil keputusan di bawah tekanan."
+    ];
 
-  function resetAll() {
-    clearInterval(timerInterval);
-    document.getElementById('identity-form').reset();
-    document.getElementById('date').valueAsDate = new Date();
-    goToStep(1);
-  }
-</script>
+    // Fungsi Render Daftar Soal
+    function renderAnswersList() {
+      const container = document.getElementById('answers-list-container');
+      container.innerHTML = '';
 
+      for (let i = 1; i <= 90; i++) {
+        const statementText = sampleStatements[(i - 1) % sampleStatements.length];
+        const itemHtml = `
+          <div class="answer-item">
+            <span class="answer-number">No. ${i}:</span> Pilihan [A] — 
+            <span class="answer-text">[A] ${statementText}</span>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', itemHtml);
+      }
+    }
+
+    // Fungsi Unduh PDF tanpa terpotong
+    function downloadPDF() {
+      const element = document.getElementById('report-content');
+      
+      const opt = {
+        margin:       [0.4, 0.4, 0.4, 0.4], // [top, left, bottom, right] dalam inchi
+        filename:     `Laporan_WBA_${userData.name.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, scrollY: 0 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Pengaturan pembagian halaman otomatis
+      };
+
+      // Proses cetak PDF
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // Jalankan render saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAnswersList();
+    });
+  </script>
 </body>
 </html>
